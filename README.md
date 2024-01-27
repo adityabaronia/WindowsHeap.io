@@ -1,1 +1,49 @@
 # WindowsHeap.io
+
+Windows 10 segment(native) heap
+
+### Definitions
+- Segment:
+ A segment is a large contiguous region of memory that is allocated by the system and divided into smaller blocks. A segment can have multiple pages and each page can have diffrent size.
+ A segment can be either committed or decommitted, meaning that it is either backed by physical memory or not.
+
+- Block:
+A block is a small region of memory that is allocated from a segment. a block can have one of the predefined sizes, ranging from 8 bytes to 16KB. A bloc kcan be either free or busy, means that it is either available for allocation or already allocated.
+
+- Chunk:
+A chunk is a group of blocks that have the same size and are located in the same heap page. A chunk can have upto 64 blocks, depending on the block size.
+
+- LFH:
+LFH stands for Low Fragmentation Heap, which is a policy that applications can enable for their heap to reduce heap fragmentation.
+Heap fragmentation is a state in which available memory is broken in certain small, non-contigous blocks, which can cause memory allocation failures.
+When the LFH is enabled, the system allocates memory in certain predetermined sizes, and uses a best-fit search algo to find the most suitable block for each request
+
+Segment heap architecture comprasis of:
+- Low fragment heap ( allocation request <= 16,368 bytes)
+- Variable Size allocation (allocation request for <= 128KB). uses backend to create the vs subsegment.
+- Backend(LFH and VS allocation talk to backend) / (segment allocation) / allocation requests for > 128KB to 508KB.
+- Large Block Allocation (Block allocation) / (allocation request > 508KB) Uses virtual memory functions provided by  NT memory manager for allocation and freeing.
+- NT Memory manager 
+
+* Segment Heap is currently opt-in feature
+* Windows apps are opted in by default
+  * Apps from windows store
+  * Microsoft Edge
+* Executables are default are also opted in by default
+  * csrss.exe
+  * lsass.exe
+  * runtimebroker.exe
+  * services.exe
+  * smss.exe
+  * svchost.exe
+* NT heap (oplder heap implementation) is still the default for traditional applications
+
+* Open Edge in Windbg and use !heap command to check heap type
+  * we will get sement heap and NT heap addresses
+ 
+### NOTE:
+even if segment heap is enabled  in a process , not all heaps created by the process will be managed by the segment heap as there are specific type of heap that
+still need to be managed by the NT heap.
+
+
+## Heap Creation
