@@ -47,3 +47,9 @@ still need to be managed by the NT heap.
 
 
 ## Heap Creation
+- If the segment heap is enabled, the heap created by heapcreate() will be managed by the segment heap unless the dwmaximumSize argument passed to it is not zero (means the heap is not growable).
+- if the rtlcreateheap() API is directly used to create heap, all of the following should be true for the segment heap to manage the created heap:
+ - **heap should be growable**: Flag argument passed to RtlCreateHeap() should have HEAP_GROWABLE set.
+ - Heap memory should be pre-allocated: HeapBase argument passed to RtlCreateHeap() should be NULL.
+ - If a Paramenter argument is passed to RtlCreateHeap(), the following paramenter fields should be set to 0/NULL: SegmentReserve, SegmentCommit, VirtualMemoryThreshold and CommitRoutine.
+ - The lock argument passed to rtlCreateHeap() should be NULL.
