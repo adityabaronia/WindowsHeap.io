@@ -18,13 +18,22 @@ LFH stands for Low Fragmentation Heap, which is a policy that applications can e
 Heap fragmentation is a state in which available memory is broken in certain small, non-contigous blocks, which can cause memory allocation failures.
 When the LFH is enabled, the system allocates memory in certain predetermined sizes, and uses a best-fit search algo to find the most suitable block for each request
 
-Segment heap architecture comprasis of:
+### Segment heap architecture comprises of:
 - Low fragment heap ( allocation request <= 16,368 bytes)
 - Variable Size allocation (allocation request for <= 128KB). uses backend to create the vs subsegment.
 - Backend(LFH and VS allocation talk to backend) / (segment allocation) / allocation requests for > 128KB to 508KB.
 - Large Block Allocation (Block allocation) / (allocation request > 508KB) Uses virtual memory functions provided by  NT memory manager for allocation and freeing.
 - NT Memory manager 
 
+### About segment heap
+* Signature of segment heap
+    ```
+    0:009> dt ntdll!_SEGMENT_HEAP 235fafc0000
+    +0x000 EnvHandle        : RTL_HP_ENV_HANDLE
+    +0x010 Signature        : 0xddeeddee
+    ``` 
+* The meta-data of segment heap is seperated from the allocated memory unlike NT heap, providing security.
+* Segment heap also has LFH like NT heap but their internal working is very different.
 * Segment Heap is currently opt-in feature
 * Windows apps are opted in by default
   * Apps from windows store
